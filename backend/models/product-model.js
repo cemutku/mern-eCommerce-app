@@ -43,7 +43,7 @@ const productSchema = mongoose.Schema(
       type: String,
       required: true,
     },
-    descritpion: {
+    description: {
       type: String,
       required: true,
     },
