@@ -22,7 +22,8 @@
   "homepage": "https://github.com/cemutku/mern-eCommerce-app#readme",
   "dependencies": {
     "dotenv": "^8.2.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mongoose": "^5.10.7"
   },
   "devDependencies": {
     "concurrently": "^5.3.0",
