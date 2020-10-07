@@ -3,6 +3,7 @@ import dotenv from 'dotenv';
 import colors from 'colors';
 import connectDb from './config/db.js';
 import productRoutes from './routes/product-routes.js';
+import userRoutes from './routes/user-routes.js';
 import { notFound, errorHandler } from './middleware/error-middleware.js';
 
 // define environment variables
@@ -14,11 +15,15 @@ connectDb();
 // create api server
 const app = express();
 
+// accept json data in the body
+app.use(express.json());
+
 app.get('/', (req, res) => {
   res.send('API is runninmg');
 });
 
 app.use('/api/products', productRoutes);
+app.use('/api/users', userRoutes);
 
 // not found middleware
 app.use(notFound);
