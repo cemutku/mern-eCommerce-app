@@ -6,21 +6,31 @@ import {
   productDetailsReducer,
 } from './reducers/product-reducers';
 import { cartReducer } from './reducers/cart-reducers';
+import { userLoginReducer } from './reducers/user-reducers';
 
 const reducer = combineReducers({
   productList: productListReducer,
   productDetails: productDetailsReducer,
   cart: cartReducer,
+  userLogin: userLoginReducer,
 });
 
-// get cart items from localStorage if exist
+// get cart items from localStorage if exists
 const cartItemsFromStorage = localStorage.getItem('cartItems')
   ? JSON.parse(localStorage.getItem('cartItems'))
   : [];
 
+// get user info from localStorage if exists
+const userInfoFromStorage = localStorage.getItem('userInfo')
+  ? JSON.parse(localStorage.getItem('userInfo'))
+  : null;
+
 const initialState = {
   cart: {
     cartItems: cartItemsFromStorage,
+  },
+  userLogin: {
+    userInfo: userInfoFromStorage,
   },
 };
 
