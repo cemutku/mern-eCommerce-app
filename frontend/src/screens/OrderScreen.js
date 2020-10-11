@@ -1,17 +1,31 @@
 import React, { useEffect } from 'react';
+import axios from 'axios';
 import { Link } from 'react-router-dom';
-import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
+import { Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { Elements } from '@stripe/react-stripe-js';
+import { loadStripe } from '@stripe/stripe-js';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
-import { getOrderDetails } from '../actions/order-actions';
+import { getOrderDetails, payOrder } from '../actions/order-actions';
+import { ORDER_PAY_RESET } from '../constants/order-constants';
+import CheckoutForm from '../components/CheckoutForm';
+
+const stripePromise = axios
+	.get('/api/payments/config/stripe-pk')
+	.then((res) => res.data)
+	.then((data) => loadStripe(data.public_key));
 
 const OrderScreen = ({ match }) => {
 	const orderId = match.params.id;
+
 	const dispatch = useDispatch();
 
 	const orderDetails = useSelector((state) => state.orderDetails);
 	const { order, loading, error } = orderDetails;
+
+	const orderPay = useSelector((state) => state.orderPay);
+	const { loading: loadingPay, success: successPay } = orderPay;
 
 	if (!loading) {
 		const addDecimals = (num) => {
@@ -23,10 +37,17 @@ const OrderScreen = ({ match }) => {
 	}
 
 	useEffect(() => {
-		if (!order || order._id !== orderId) {
+		if (successPay || !order || order._id !== orderId) {
+			dispatch({ type: ORDER_PAY_RESET }); // to prevent keep refreshing after payment
 			dispatch(getOrderDetails(orderId));
 		}
-	}, [dispatch, order, orderId]);
+	}, [dispatch, order, orderId, successPay]);
+
+	// call pay order
+	const successPaymentHandler = (paymentResult) => {
+		console.log(paymentResult);
+		dispatch(payOrder(orderId, paymentResult));
+	};
 
 	return loading ? (
 		<Loader />
@@ -36,7 +57,7 @@ const OrderScreen = ({ match }) => {
 		<>
 			<h1>Order {orderId}</h1>
 			<Row>
-				<Col md={8}>
+				<Col md={7}>
 					<ListGroup variant='flush'>
 						<ListGroup.Item>
 							<h2>Shipping</h2>
@@ -48,7 +69,7 @@ const OrderScreen = ({ match }) => {
 								<a href={`mailto:${order.user.email}`}>{order.user.email}</a>
 							</p>
 							<p>
-								<srong>Address:</srong>
+								<strong>Address:</strong>
 								{order.shippingAddress.address}, {order.shippingAddress.city}{' '}
 								{order.shippingAddress.postalCode},{' '}
 								{order.shippingAddress.country}
@@ -107,7 +128,7 @@ const OrderScreen = ({ match }) => {
 						</ListGroup.Item>
 					</ListGroup>
 				</Col>
-				<Col md={4}>
+				<Col md={5}>
 					<Card>
 						<ListGroup variant='flush'>
 							<ListGroup.Item>
@@ -137,6 +158,17 @@ const OrderScreen = ({ match }) => {
 									<Col>${order.totalPrice}</Col>
 								</Row>
 							</ListGroup.Item>
+							{!order.isPaid && (
+								<ListGroup.Item>
+									{loadingPay && <Loader />}
+									<Elements stripe={stripePromise}>
+										<CheckoutForm
+											totalPrice={order.totalPrice}
+											paymentHandler={successPaymentHandler}
+										/>
+									</Elements>
+								</ListGroup.Item>
+							)}
 						</ListGroup>
 					</Card>
 				</Col>
