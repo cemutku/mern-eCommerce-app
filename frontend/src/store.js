@@ -30,7 +30,7 @@ const reducer = combineReducers({
 	orderCreate: orderCreateReducer,
 	orderDetails: orderDetailsReducer,
 	orderPay: orderPayReducer,
-	getMyOrders: getMyOrdersReducer,
+	orderGetMyOrders: getMyOrdersReducer,
 });
 
 // get cart items from localStorage if exists
