@@ -7,6 +7,7 @@ import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import Message from '../components/Message';
 import Loader from '../components/Loader';
+import Meta from '../components/Meta';
 import {
 	getOrderDetails,
 	payOrder,
@@ -77,6 +78,7 @@ const OrderScreen = ({ match, history }) => {
 		<Message variant='danger'>{error}</Message>
 	) : (
 		<>
+			<Meta title='Order Details' />
 			<h1>Order {orderId}</h1>
 			<Row>
 				<Col md={7}>
