@@ -7,6 +7,7 @@ import Loader from '../components/Loader';
 import Meta from '../components/Meta';
 import { getUserDetails, updateUserProfile } from '../actions/user-actions';
 import { listMyOrders } from '../actions/order-actions';
+import { USER_UPDATE_PROFILE_RESET } from '../constants/user-constants';
 
 const ProfileScreen = ({ location, history }) => {
 	const [name, setName] = useState('');
@@ -37,7 +38,8 @@ const ProfileScreen = ({ location, history }) => {
 		if (!userInfo) {
 			history.push('/login');
 		} else {
-			if (!user.name) {
+			if (!user || !user.name || success) {
+				dispatch({ type: USER_UPDATE_PROFILE_RESET });
 				dispatch(getUserDetails('profile')); // we want to get the logged in user (/api/users/profile)
 				dispatch(listMyOrders());
 			} else {
@@ -45,7 +47,7 @@ const ProfileScreen = ({ location, history }) => {
 				setEmail(user.email);
 			}
 		}
-	}, [dispatch, history, userInfo, user]); // to fire off whenever when that changes
+	}, [dispatch, history, userInfo, user, success]); // to fire off whenever when that changes
 
 	const submitHandler = (e) => {
 		e.preventDefault();
