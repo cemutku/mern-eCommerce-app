@@ -24,9 +24,11 @@ You can find the backend and frontend usage steps below:
 
 ### Backend
 
-After installation, run the `npm start` in the root directory and go check the http://localhost:5000/ for backend API.
+Before using the API, you must set the MONGO_URI value in the .env file. Change the name of the ".env_sample" to ".env" then add your environment variables to this file.
 
-You must be seeing the "API is running" message on the browser then you can also test it from application like Postman. For example, check the products route from http://localhost:5000/api/products
+Run the `npm start` in the root directory and go check the http://localhost:5000/ for backend API.
+
+You must be seeing the "API is running" message on the browser then you can also test it from application like Postman.
 
 ### Frontend
 
