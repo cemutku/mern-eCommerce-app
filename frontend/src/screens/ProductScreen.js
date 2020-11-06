@@ -18,12 +18,18 @@ import {
 	listProductDetails,
 	createProductReview,
 } from '../actions/product-actions';
+import {
+	addToFavorites,
+	removeFavorite,
+	getFavorites,
+} from '../actions/user-actions';
 import { PRODUCT_CREATE_REVIEW_RESET } from '../constants/product-constants';
 
 const ProductScreen = ({ history, match }) => {
 	const [qty, setQty] = useState(1);
 	const [rating, setRating] = useState(0);
 	const [comment, setComment] = useState('');
+	const [isFavorite, setIsFavorite] = useState(false);
 
 	const dispatch = useDispatch();
 
@@ -39,6 +45,22 @@ const ProductScreen = ({ history, match }) => {
 	const userLogin = useSelector((state) => state.userLogin);
 	const { userInfo } = userLogin;
 
+	const userFavorites = useSelector((state) => state.userGetFavorites);
+
+	const { favorites } = userFavorites;
+
+	const userRemoveFavorite = useSelector((state) => state.userRemoveFavorite);
+	const {
+		success: successRemoveFavorite,
+		loading: loadingRemoveFavorite,
+	} = userRemoveFavorite;
+
+	const userAddFavorites = useSelector((state) => state.userAddFavorites);
+	const {
+		success: successAddFavorite,
+		loading: loadingAddFavorite,
+	} = userAddFavorites;
+
 	useEffect(() => {
 		if (successProductReview) {
 			alert('Review Submitted!');
@@ -46,8 +68,31 @@ const ProductScreen = ({ history, match }) => {
 			setComment('');
 			dispatch({ type: PRODUCT_CREATE_REVIEW_RESET });
 		}
+
 		dispatch(listProductDetails(match.params.id));
-	}, [dispatch, match, successProductReview]);
+
+		let didCancel = false;
+		dispatch(getFavorites(userInfo._id));
+
+		if (didCancel) {
+			console.log(didCancel);
+			setIsFavorite((state) => ({
+				...state,
+				isFavorite: favorites.some((x) => x.product === match.params.id),
+			}));
+		}
+
+		return () => {
+			didCancel = true;
+		};
+	}, [
+		dispatch,
+		match,
+		successProductReview,
+		userInfo._id,
+		successAddFavorite,
+		successRemoveFavorite,
+	]);
 
 	const addToCartHandler = () => {
 		history.push(`/cart/${match.params.id}?qty=${qty}`);
@@ -61,6 +106,15 @@ const ProductScreen = ({ history, match }) => {
 				comment,
 			})
 		);
+	};
+
+	const addToFavoritesHandler = () => {
+		setIsFavorite(!isFavorite);
+		if (isFavorite) {
+			dispatch(removeFavorite(match.params.id, userInfo._id));
+		} else {
+			dispatch(addToFavorites(match.params.id, userInfo._id));
+		}
 	};
 
 	return (
@@ -90,6 +144,30 @@ const ProductScreen = ({ history, match }) => {
 										text={`${product.numReviews} reviews`}
 									/>
 								</ListGroup.Item>
+								{userInfo && (
+									<ListGroup.Item>
+										<div
+											onClick={addToFavoritesHandler}
+											variant='light'
+											type='button'
+											className='like-center'
+											disabled={product.countInStock === 0}
+										>
+											{loadingRemoveFavorite || loadingAddFavorite ? (
+												<Loader />
+											) : (
+												<i
+													className={
+														isFavorite
+															? 'fas fa-heart fa-3x'
+															: 'far fa-heart fa-3x'
+													}
+												></i>
+											)}
+										</div>
+									</ListGroup.Item>
+								)}
+
 								<ListGroup.Item>Price: ${product.price}</ListGroup.Item>
 								<ListGroup.Item>
 									Description: {product.description}

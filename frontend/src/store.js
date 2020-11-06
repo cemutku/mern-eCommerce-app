@@ -19,6 +19,9 @@ import {
 	userListReducer,
 	userDeleteReducer,
 	userUpdateReducer,
+	userAddToFavoriteReducer,
+	userRemoveFavoriteReducer,
+	userGetFavoritesReducer,
 } from './reducers/user-reducers';
 import {
 	orderCreateReducer,
@@ -45,6 +48,9 @@ const reducer = combineReducers({
 	userList: userListReducer,
 	userDelete: userDeleteReducer,
 	userUpdate: userUpdateReducer,
+	userAddFavorites: userAddToFavoriteReducer,
+	userRemoveFavorite: userRemoveFavoriteReducer,
+	userGetFavorites: userGetFavoritesReducer,
 	orderCreate: orderCreateReducer,
 	orderDetails: orderDetailsReducer,
 	orderPay: orderPayReducer,

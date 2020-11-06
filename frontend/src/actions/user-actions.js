@@ -24,6 +24,15 @@ import {
 	USER_UPDATE_REQUEST,
 	USER_UPDATE_SUCCESS,
 	USER_UPDATE_FAIL,
+	USER_ADD_FAVORITE_REQUEST,
+	USER_ADD_FAVORITE_SUCCESS,
+	USER_ADD_FAVORITE_FAIL,
+	USER_REMOVE_FAVORITE_REQUEST,
+	USER_REMOVE_FAVORITE_SUCCESS,
+	USER_REMOVE_FAVORITE_FAIL,
+	USER_GET_FAVORITES_REQUEST,
+	USER_GET_FAVORITES_SUCCESS,
+	USER_GET_FAVORITES_FAIL,
 } from '../constants/user-constants';
 
 import { ORDER_GET_MY_ORDERS_RESET } from '../constants/order-constants';
@@ -287,6 +296,120 @@ export const updateUser = (user) => async (dispatch, getState) => {
 	} catch (error) {
 		dispatch({
 			type: USER_UPDATE_FAIL,
+			payload:
+				error.response && error.response.data.message
+					? error.response.data.message
+					: error.message,
+		});
+	}
+};
+
+export const addToFavorites = (productId, userId) => async (
+	dispatch,
+	getState
+) => {
+	try {
+		dispatch({
+			type: USER_ADD_FAVORITE_REQUEST,
+		});
+
+		const {
+			userLogin: { userInfo },
+		} = getState();
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${userInfo.token}`,
+			},
+		};
+
+		const { data } = await axios.post(
+			`/api/users/${userId}/favorites`,
+			{ productId },
+			config
+		);
+
+		dispatch({
+			type: USER_ADD_FAVORITE_SUCCESS,
+			payload: data.favorites,
+		});
+	} catch (error) {
+		dispatch({
+			type: USER_ADD_FAVORITE_FAIL,
+			payload:
+				error.response && error.response.data.message
+					? error.response.data.message
+					: error.message,
+		});
+	}
+};
+
+export const removeFavorite = (productId, userId) => async (
+	dispatch,
+	getState
+) => {
+	try {
+		dispatch({
+			type: USER_REMOVE_FAVORITE_REQUEST,
+		});
+
+		const {
+			userLogin: { userInfo },
+		} = getState();
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${userInfo.token}`,
+			},
+		};
+
+		const { data } = await axios.delete(
+			`/api/users/${userId}/favorites/${productId}`,
+			config
+		);
+
+		dispatch({
+			type: USER_REMOVE_FAVORITE_SUCCESS,
+		});
+	} catch (error) {
+		dispatch({
+			type: USER_REMOVE_FAVORITE_FAIL,
+			payload:
+				error.response && error.response.data.message
+					? error.response.data.message
+					: error.message,
+		});
+	}
+};
+
+export const getFavorites = (userId) => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: USER_GET_FAVORITES_REQUEST,
+		});
+
+		const {
+			userLogin: { userInfo },
+		} = getState();
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${userInfo.token}`,
+			},
+		};
+
+		const { data } = await axios.get(`/api/users/${userId}/favorites`, config);
+
+		dispatch({
+			type: USER_GET_FAVORITES_SUCCESS,
+			payload: data.favorites,
+		});
+	} catch (error) {
+		dispatch({
+			type: USER_GET_FAVORITES_FAIL,
 			payload:
 				error.response && error.response.data.message
 					? error.response.data.message

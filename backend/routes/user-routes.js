@@ -8,6 +8,9 @@ import {
 	deleteUser,
 	getUserById,
 	updateUser,
+	addFavoriteProduct,
+	removeFavoriteProduct,
+	getFavoriteProducts,
 } from '../controllers/user-controller.js';
 import { protect, isAdmin } from '../middleware/auth-middleware.js';
 
@@ -24,5 +27,13 @@ router
 	.delete(protect, isAdmin, deleteUser)
 	.get(protect, isAdmin, getUserById)
 	.put(protect, isAdmin, updateUser);
+
+router
+	.route('/:id/favorites')
+	.get(protect, getFavoriteProducts)
+	.post(protect, addFavoriteProduct);
+router
+	.route('/:id/favorites/:productId')
+	.delete(protect, removeFavoriteProduct);
 
 export default router;

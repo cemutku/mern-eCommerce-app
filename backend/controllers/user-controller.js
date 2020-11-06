@@ -170,6 +170,69 @@ const updateUser = asyncHandler(async (req, res) => {
 	}
 });
 
+// @description     Add new Favorite Product
+// @route           POST /api/users/:id/favorites
+// @access          Private
+const addFavoriteProduct = asyncHandler(async (req, res) => {
+	const { productId } = req.body;
+	const user = await User.findById(req.params.id);
+
+	if (user) {
+		const favorite = {
+			product: productId,
+		};
+
+		user.favorites.push(favorite);
+		await user.save();
+		res.status(201).json({
+			favorites: user.favorites,
+			message: 'Product is added to favorites',
+		});
+	} else {
+		res.status(404);
+		throw new Error('User not found');
+	}
+});
+
+// @description     Delete Favorite Product
+// @route           DELETE /api/users/:id/favorites/:productId
+// @access          Private
+const removeFavoriteProduct = asyncHandler(async (req, res) => {
+	const productId = req.params.productId;
+	const user = await User.findById(req.params.id);
+
+	const isExists = user.favorites.some(
+		(x) => x.product.toString() == productId.toString()
+	);
+
+	if (isExists) {
+		user.favorites = user.favorites.filter(
+			(favorite) => favorite.product.toString() !== productId.toString()
+		);
+		await user.save();
+		res.status(202).json({
+			message: 'Product is removed from favorites',
+		});
+	} else {
+		res.status(404);
+		throw new Error('Product not found');
+	}
+});
+
+// @description     Get Favorite Products
+// @route           GET /api/users/:id/favorites
+// @access          Private
+const getFavoriteProducts = asyncHandler(async (req, res) => {
+	const user = await User.findById(req.params.id);
+
+	if (user) {
+		res.status(200).json({ favorites: user.favorites });
+	} else {
+		res.status(404);
+		throw new Error('User not found');
+	}
+});
+
 export {
 	authUser,
 	getUserProfile,
@@ -179,4 +242,7 @@ export {
 	deleteUser,
 	getUserById,
 	updateUser,
+	addFavoriteProduct,
+	removeFavoriteProduct,
+	getFavoriteProducts,
 };

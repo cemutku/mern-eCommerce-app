@@ -25,6 +25,15 @@ import {
 	USER_UPDATE_REQUEST,
 	USER_UPDATE_SUCCESS,
 	USER_UPDATE_FAIL,
+	USER_ADD_FAVORITE_REQUEST,
+	USER_ADD_FAVORITE_SUCCESS,
+	USER_ADD_FAVORITE_FAIL,
+	USER_REMOVE_FAVORITE_REQUEST,
+	USER_REMOVE_FAVORITE_SUCCESS,
+	USER_REMOVE_FAVORITE_FAIL,
+	USER_GET_FAVORITES_REQUEST,
+	USER_GET_FAVORITES_SUCCESS,
+	USER_GET_FAVORITES_FAIL,
 } from '../constants/user-constants';
 
 export const userLoginReducer = (state = {}, action) => {
@@ -123,6 +132,54 @@ export const userUpdateReducer = (state = { user: {} }, action) => {
 			return { loading: false, error: action.payload };
 		case USER_UPDATE_RESET:
 			return { user: {} };
+		default:
+			return state;
+	}
+};
+
+export const userAddToFavoriteReducer = (state = { favorites: [] }, action) => {
+	switch (action.type) {
+		case USER_ADD_FAVORITE_REQUEST:
+			return { loading: true, favorites: [] };
+		case USER_ADD_FAVORITE_SUCCESS:
+			return {
+				loading: false,
+				success: true,
+			};
+		case USER_ADD_FAVORITE_FAIL:
+			return { loading: false, error: action.payload };
+		default:
+			return state;
+	}
+};
+
+export const userRemoveFavoriteReducer = (
+	state = { favorites: [] },
+	action
+) => {
+	switch (action.type) {
+		case USER_REMOVE_FAVORITE_REQUEST:
+			return { loading: true };
+		case USER_REMOVE_FAVORITE_SUCCESS:
+			return {
+				loading: false,
+				success: true,
+			};
+		case USER_REMOVE_FAVORITE_FAIL:
+			return { loading: false, error: action.payload };
+		default:
+			return state;
+	}
+};
+
+export const userGetFavoritesReducer = (state = { favorites: [] }, action) => {
+	switch (action.type) {
+		case USER_GET_FAVORITES_REQUEST:
+			return { loading: true, favorites: [] };
+		case USER_GET_FAVORITES_SUCCESS:
+			return { loading: false, favorites: action.payload };
+		case USER_GET_FAVORITES_FAIL:
+			return { loading: false, error: action.payload };
 		default:
 			return state;
 	}
