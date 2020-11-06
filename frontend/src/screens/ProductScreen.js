@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
@@ -29,7 +29,7 @@ const ProductScreen = ({ history, match }) => {
 	const [qty, setQty] = useState(1);
 	const [rating, setRating] = useState(0);
 	const [comment, setComment] = useState('');
-	const [isFavorite, setIsFavorite] = useState(false);
+	const [isFavorite, setIsFavorite] = useState(null);
 
 	const dispatch = useDispatch();
 
@@ -46,20 +46,7 @@ const ProductScreen = ({ history, match }) => {
 	const { userInfo } = userLogin;
 
 	const userFavorites = useSelector((state) => state.userGetFavorites);
-
 	const { favorites } = userFavorites;
-
-	const userRemoveFavorite = useSelector((state) => state.userRemoveFavorite);
-	const {
-		success: successRemoveFavorite,
-		loading: loadingRemoveFavorite,
-	} = userRemoveFavorite;
-
-	const userAddFavorites = useSelector((state) => state.userAddFavorites);
-	const {
-		success: successAddFavorite,
-		loading: loadingAddFavorite,
-	} = userAddFavorites;
 
 	useEffect(() => {
 		if (successProductReview) {
@@ -71,29 +58,28 @@ const ProductScreen = ({ history, match }) => {
 
 		dispatch(listProductDetails(match.params.id));
 
-		let didCancel = false;
-
 		if (userInfo) {
 			dispatch(getFavorites(userInfo._id));
 		}
+	}, [dispatch, match, successProductReview]);
 
-		if (didCancel) {
-			setIsFavorite((state) => ({
-				...state,
-				isFavorite: favorites.some((x) => x.product === match.params.id),
-			}));
+	const useIsMounted = () => {
+		const isMounted = useRef(false);
+		useEffect(() => {
+			isMounted.current = true;
+			return () => (isMounted.current = false);
+		}, []);
+		return isMounted;
+	};
+	const isMounted = useIsMounted();
+
+	useEffect(() => {
+		if (isMounted.current && favorites) {
+			setIsFavorite(() => {
+				return favorites.some((x) => x.product === match.params.id);
+			});
 		}
-
-		return () => {
-			didCancel = true;
-		};
-	}, [
-		dispatch,
-		match,
-		successProductReview,
-		successAddFavorite,
-		successRemoveFavorite,
-	]);
+	}, [isMounted, favorites]);
 
 	const addToCartHandler = () => {
 		history.push(`/cart/${match.params.id}?qty=${qty}`);
@@ -154,17 +140,13 @@ const ProductScreen = ({ history, match }) => {
 											className='like-center'
 											disabled={product.countInStock === 0}
 										>
-											{loadingRemoveFavorite || loadingAddFavorite ? (
-												<Loader />
-											) : (
-												<i
-													className={
-														isFavorite
-															? 'fas fa-heart fa-3x'
-															: 'far fa-heart fa-3x'
-													}
-												></i>
-											)}
+											<i
+												className={
+													isFavorite
+														? 'fas fa-heart fa-3x'
+														: 'far fa-heart fa-3x'
+												}
+											></i>
 										</div>
 									</ListGroup.Item>
 								)}
