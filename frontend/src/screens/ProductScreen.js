@@ -72,7 +72,10 @@ const ProductScreen = ({ history, match }) => {
 		dispatch(listProductDetails(match.params.id));
 
 		let didCancel = false;
-		dispatch(getFavorites(userInfo._id));
+
+		if (userInfo) {
+			dispatch(getFavorites(userInfo._id));
+		}
 
 		if (didCancel) {
 			setIsFavorite((state) => ({
@@ -88,7 +91,6 @@ const ProductScreen = ({ history, match }) => {
 		dispatch,
 		match,
 		successProductReview,
-		userInfo._id,
 		successAddFavorite,
 		successRemoveFavorite,
 	]);
