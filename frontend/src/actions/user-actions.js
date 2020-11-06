@@ -365,10 +365,7 @@ export const removeFavorite = (productId, userId) => async (
 			},
 		};
 
-		const { data } = await axios.delete(
-			`/api/users/${userId}/favorites/${productId}`,
-			config
-		);
+		await axios.delete(`/api/users/${userId}/favorites/${productId}`, config);
 
 		dispatch({
 			type: USER_REMOVE_FAVORITE_SUCCESS,

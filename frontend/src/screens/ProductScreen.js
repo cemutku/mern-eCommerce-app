@@ -75,7 +75,6 @@ const ProductScreen = ({ history, match }) => {
 		dispatch(getFavorites(userInfo._id));
 
 		if (didCancel) {
-			console.log(didCancel);
 			setIsFavorite((state) => ({
 				...state,
 				isFavorite: favorites.some((x) => x.product === match.params.id),
