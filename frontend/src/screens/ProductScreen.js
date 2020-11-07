@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import {
@@ -24,6 +24,7 @@ import {
 	getFavorites,
 } from '../actions/user-actions';
 import { PRODUCT_CREATE_REVIEW_RESET } from '../constants/product-constants';
+import useIsMounted from '../hooks/useIsMounted';
 
 const ProductScreen = ({ history, match }) => {
 	const [qty, setQty] = useState(1);
@@ -61,16 +62,8 @@ const ProductScreen = ({ history, match }) => {
 		if (userInfo) {
 			dispatch(getFavorites(userInfo._id));
 		}
-	}, [dispatch, match, successProductReview]);
+	}, [dispatch, match, userInfo, successProductReview]);
 
-	const useIsMounted = () => {
-		const isMounted = useRef(false);
-		useEffect(() => {
-			isMounted.current = true;
-			return () => (isMounted.current = false);
-		}, []);
-		return isMounted;
-	};
 	const isMounted = useIsMounted();
 
 	useEffect(() => {
@@ -79,7 +72,7 @@ const ProductScreen = ({ history, match }) => {
 				return favorites.some((x) => x.product === match.params.id);
 			});
 		}
-	}, [isMounted, favorites]);
+	}, [isMounted, favorites, match.params.id]);
 
 	const addToCartHandler = () => {
 		history.push(`/cart/${match.params.id}?qty=${qty}`);
