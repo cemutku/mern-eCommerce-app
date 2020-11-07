@@ -304,7 +304,7 @@ export const updateUser = (user) => async (dispatch, getState) => {
 	}
 };
 
-export const addToFavorites = (productId, userId) => async (
+export const addToFavorites = (product, userId) => async (
 	dispatch,
 	getState
 ) => {
@@ -326,7 +326,14 @@ export const addToFavorites = (productId, userId) => async (
 
 		const { data } = await axios.post(
 			`/api/users/${userId}/favorites`,
-			{ productId },
+			{
+				productId: product._id,
+				name: product.name,
+				image: product.image,
+				price: product.price,
+				numReviews: product.numReviews,
+				rating: product.rating,
+			},
 			config
 		);
 

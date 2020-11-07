@@ -91,9 +91,9 @@ const ProductScreen = ({ history, match }) => {
 	const addToFavoritesHandler = () => {
 		setIsFavorite(!isFavorite);
 		if (isFavorite) {
-			dispatch(removeFavorite(match.params.id, userInfo._id));
+			dispatch(removeFavorite(product._id, userInfo._id));
 		} else {
-			dispatch(addToFavorites(match.params.id, userInfo._id));
+			dispatch(addToFavorites(product, userInfo._id));
 		}
 	};
 

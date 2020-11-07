@@ -174,11 +174,16 @@ const updateUser = asyncHandler(async (req, res) => {
 // @route           POST /api/users/:id/favorites
 // @access          Private
 const addFavoriteProduct = asyncHandler(async (req, res) => {
-	const { productId } = req.body;
+	const { productId, name, image, price, numReviews, rating } = req.body;
 	const user = await User.findById(req.params.id);
 
 	if (user) {
 		const favorite = {
+			name,
+			image,
+			price,
+			numReviews,
+			rating,
 			product: productId,
 		};
 

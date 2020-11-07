@@ -161,10 +161,7 @@ export const userRemoveFavoriteReducer = (
 		case USER_REMOVE_FAVORITE_REQUEST:
 			return { loading: true };
 		case USER_REMOVE_FAVORITE_SUCCESS:
-			return {
-				loading: false,
-				success: true,
-			};
+			return { loading: false, success: true };
 		case USER_REMOVE_FAVORITE_FAIL:
 			return { loading: false, error: action.payload };
 		default:
