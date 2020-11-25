@@ -23,13 +23,15 @@ const Product = ({ product, isFavorite, removeFromFavorites }) => {
 				</Card.Text>
 				<Card.Text as='h3'>${product.price}</Card.Text>
 			</Card.Body>
-			<Button
-				type='button'
-				variant='light'
-				onClick={() => removeFromFavorites(product.product)}
-			>
-				<i className='fas fa-trash fa-2x'></i>
-			</Button>
+			{product.product && (
+				<Button
+					type='button'
+					variant='light'
+					onClick={() => removeFromFavorites(product.product)}
+				>
+					<i className='fas fa-trash fa-2x'></i>
+				</Button>
+			)}
 		</Card>
 	);
 };
